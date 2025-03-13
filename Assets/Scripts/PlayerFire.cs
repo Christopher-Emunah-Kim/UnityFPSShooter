@@ -1,3 +1,4 @@
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class PlayerFire : MonoBehaviour
@@ -8,6 +9,7 @@ public class PlayerFire : MonoBehaviour
     public GameObject bulletEffect; //피격이펙트
     
     public float throwPower = 15f; //던지는 힘
+    public int weaponPower = 5;
     
     private ParticleSystem ps; //파티클시스템
     
@@ -46,23 +48,34 @@ public class PlayerFire : MonoBehaviour
             {
                 Debug.Log(hitinfo.collider.gameObject.name);
                 
-                if (bulletEffect == null)
+                //만약 부딪친게 Enemy 레이어라면 데미지 함수 실행
+                if (hitinfo.transform.gameObject.layer == LayerMask.NameToLayer("Enemy"))
                 {
-                    Debug.LogError("No bullet effect");
-                    return;
+                    //FSM가져와서 데미지 함수 실행
+                    EnemyFSM eFSM = hitinfo.transform.GetComponent<EnemyFSM>();
+                    eFSM.HitDamage(weaponPower);
                 }
-                //피격이펙트를 레이가 부딪친 지점에.
-                bulletEffect.transform.position = hitinfo.point;
-                
-                //피격이펙트의 방향을 부딪친 곳의 법선 벡터와 일치시킴
-                bulletEffect.transform.forward = hitinfo.normal;
-                
-                if(ps == null)
+                //아니라면 피격이펙트 재생
+                else
                 {
-                    Debug.LogError("No particle system");
-                    return;
+                    if (bulletEffect == null)
+                    {
+                        Debug.LogError("No bullet effect");
+                        return;
+                    }
+                    //피격이펙트를 레이가 부딪친 지점에.
+                    bulletEffect.transform.position = hitinfo.point;
+                
+                    //피격이펙트의 방향을 부딪친 곳의 법선 벡터와 일치시킴
+                    bulletEffect.transform.forward = hitinfo.normal;
+                
+                    if(ps == null)
+                    {
+                        Debug.LogError("No particle system");
+                        return;
+                    }
+                    ps.Play();
                 }
-                ps.Play();
             }
             else
             {

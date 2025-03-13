@@ -10,6 +10,9 @@ public class PlayerMove : MonoBehaviour
     //속도
     public float moveSpeed = 7f;
     
+    //hp
+    public float hp = 100f;
+    
     //점프 관련 변수
     private float gravity = -15f;
     public float yVelocity = 0f;
@@ -66,5 +69,12 @@ public class PlayerMove : MonoBehaviour
         
         
         
+    }
+
+    //플레이어 피격 함수
+    public void DamageAction(int damage)
+    {
+        //에너미 공격력만큼 데미지를 받기
+        hp -= damage;
     }
 }
