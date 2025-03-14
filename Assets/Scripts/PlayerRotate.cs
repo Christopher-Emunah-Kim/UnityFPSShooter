@@ -3,7 +3,7 @@ using UnityEngine;
 public class PlayerRotate : MonoBehaviour
 {
     //회전속도
-    public float rotSpeed = 200.0f;
+    public float rotSpeed = 500.0f;
     
     //회전값 처리 변수
     private float mx = 0;

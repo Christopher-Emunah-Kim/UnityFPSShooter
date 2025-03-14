@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerMove : MonoBehaviour
 {
@@ -11,13 +12,21 @@ public class PlayerMove : MonoBehaviour
     public float moveSpeed = 7f;
     
     //hp
-    public float hp = 100f;
+    public int hp = 20;
+    public int maxHp = 20;
     
     //점프 관련 변수
     private float gravity = -15f;
     public float yVelocity = 0f;
     public float jumpPower = 3f;
     private bool isGrounded;
+    
+    //UI
+    //hp slider
+    public Slider hpSlider;
+    //takedamage effect
+    public GameObject hitEffect;
+    
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -67,7 +76,8 @@ public class PlayerMove : MonoBehaviour
         //이동속도에 맞춰 컨트롤러로 이동
         cc.Move(dir * (moveSpeed * Time.deltaTime));
         
-        
+        //현재 플레이어 hp를 hp슬라이더의 value에 반영
+        hpSlider.value = (float) hp / (float) maxHp;
         
     }
 
@@ -76,5 +86,23 @@ public class PlayerMove : MonoBehaviour
     {
         //에너미 공격력만큼 데미지를 받기
         hp -= damage;
+        
+        //체력이 0보다 크면 피격효과 재생
+        if (hp > 0)
+        {
+            //피격이펙트 코루틴 함수 작동
+            StartCoroutine(PlayHitEffect());
+        }
+    }
+    
+    //피격효과 코루틴 함수
+    IEnumerator PlayHitEffect()
+    {
+        //UI활성화
+        hitEffect.SetActive(true);
+        //0.3초 대기
+        yield return new WaitForSeconds(0.3f);
+        //비활성화
+        hitEffect.SetActive(false);
     }
 }

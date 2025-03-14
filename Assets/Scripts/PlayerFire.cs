@@ -9,7 +9,7 @@ public class PlayerFire : MonoBehaviour
     public GameObject bulletEffect; //피격이펙트
     
     public float throwPower = 15f; //던지는 힘
-    public int weaponPower = 5;
+    public int weaponPower = 3;
     
     private ParticleSystem ps; //파티클시스템
     

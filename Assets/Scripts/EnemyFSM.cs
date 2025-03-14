@@ -1,9 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.UI;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.PlayerLoop;
+using UnityEngine.UI;
 
 public class EnemyFSM : MonoBehaviour
 {
@@ -43,9 +43,14 @@ public class EnemyFSM : MonoBehaviour
     //에너미 공격력
     public int attackPower = 3;
     //에너미 HP
-    public int hp = 15;
+    private int hp = 15;
     //에너미 최대 HP
     public int maxHp = 15;
+    
+    //UI
+    //HP Slider
+    public Slider hpSlider;
+    
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -76,6 +81,9 @@ public class EnemyFSM : MonoBehaviour
             case EnemyState.Damaged: break;
             case EnemyState.Die: break;
         }
+        
+        //현재HP를 슬라이더에 반영한다.
+        hpSlider.value = (float)hp/(float)maxHp;
     }
     
     //대기상태함수
