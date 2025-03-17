@@ -38,6 +38,12 @@ public class PlayerMove : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //게임 상태가 '게임중'일떄만 조작 가능
+        if (GameManager.gm.gState != GameManager.GameState.Run)
+        {
+            return;
+        }
+        
         //wasd 입력 처리
         float h = Input.GetAxis("Horizontal");
         float v = Input.GetAxis("Vertical");

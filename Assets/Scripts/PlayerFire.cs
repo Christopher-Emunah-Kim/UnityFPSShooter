@@ -23,6 +23,12 @@ public class PlayerFire : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //게임 상태가 '게임중'일떄만 조작 가능
+        if (GameManager.gm.gState != GameManager.GameState.Run)
+        {
+            return;
+        }
+        
         //마우스 우클릭 입력하면 바라보는 방향으로 수류탄 던지기
         if (Input.GetMouseButtonDown(1))
         {

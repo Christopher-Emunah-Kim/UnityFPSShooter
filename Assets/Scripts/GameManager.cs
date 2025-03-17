@@ -15,6 +15,9 @@ public class GameManager : MonoBehaviour
     
     //싱글턴 객체
     public static GameManager gm;
+    
+    //PlayerMove클래스 변수
+    private PlayerMove player;
 
     //현재게임상태
     public GameState gState;
@@ -38,6 +41,8 @@ public class GameManager : MonoBehaviour
     {  
         //초기에는 준비상태
         gState = GameState.Ready;
+        //플레이어 오브젝트를 찾은 후 PlayerMove 컴포넌트 받기
+        player = GameObject.Find("Player").GetComponent<PlayerMove>();
         //게임상태 UI오브젝트에서 Text 컴포넌트를 불러옴
         gameText = gameLabel.GetComponent<Text>();
         //텍스트 내용을 '준비'로 함.
@@ -67,6 +72,14 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if (player.hp <= 0)
+        {
+            //상태 텍스트 활성화
+            gameLabel.SetActive(true);
+            gameText.text = "Game Over!";
+            gameText.color = Color.red;
+            //상태를 게임오버로 변경
+            gState = GameState.GameOver;
+        }
     }
 }
