@@ -54,7 +54,7 @@ public class GameManager : MonoBehaviour
         //2초 대기
         yield return new WaitForSeconds(2f);
         //텍스트 변경
-        gameText = "Go!";
+        gameText.text = "Go!";
         //0.5초 대기
         yield return new WaitForSeconds(0.5f);
         //텍스트 비활성화
