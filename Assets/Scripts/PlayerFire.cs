@@ -1,8 +1,20 @@
+using System.Collections;
+using System.Net.Mime;
+using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerFire : MonoBehaviour
 {
+    //무기모드 enum
+    enum WeaponMode
+    {
+        Normal,
+        Sniper
+    }
+
+    private WeaponMode wMode;
     
     public GameObject firePosition; //발사위치
     public GameObject bombFactory; //수류탄오브젝트
@@ -11,8 +23,17 @@ public class PlayerFire : MonoBehaviour
     public float throwPower = 15f; //던지는 힘
     public int weaponPower = 3;
     
+    //카메라 상태 체크 변수
+    private bool ZoomMode = false;
+    
     private ParticleSystem ps; //파티클시스템
     private Animator anim; //애니메이터 변수
+    
+    //총기효과 오브젝트 배열
+    public GameObject[] eff_Flash;
+    
+    //UI
+    public Text wModeText;
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -21,6 +42,8 @@ public class PlayerFire : MonoBehaviour
         ps = bulletEffect.GetComponent<ParticleSystem>();
         //애니메이터 컴포넌트 가져오기
         anim = GetComponentInChildren<Animator>();
+        //무기 기본모드는 노멀
+        wMode = WeaponMode.Normal;
     }
 
     // Update is called once per frame
@@ -32,15 +55,50 @@ public class PlayerFire : MonoBehaviour
             return;
         }
         
-        //마우스 우클릭 입력하면 바라보는 방향으로 수류탄 던지기
+        //키입력에 따른 무기모드 변경
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            wMode = WeaponMode.Normal;
+            //카메라 화면 원래대로
+            Camera.main.fieldOfView = 60f;
+            wModeText.text = "Normal Mode"; //일반모드 텍스트 출력
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            wMode = WeaponMode.Sniper;
+            wModeText.text = "Sniper Mode"; //스나이퍼모드 텍스트 출력
+        }
+        
+        //노멀 : 마우스 우클릭 입력하면 바라보는 방향으로 수류탄 던지기
+        //스나이퍼 : 마우스 우클릭 입력시 화면확대
         if (Input.GetMouseButtonDown(1))
         {
-            GameObject bomb = Instantiate(bombFactory);
-            bomb.transform.position = firePosition.transform.position;
+            switch (wMode)
+            {
+                //기존 코드
+                case WeaponMode.Normal:
+                    GameObject bomb = Instantiate(bombFactory);
+                    bomb.transform.position = firePosition.transform.position;
             
-            Rigidbody rb = bomb.GetComponent<Rigidbody>();
-            rb.AddForce(Camera.main.transform.forward * throwPower, ForceMode.Impulse);
-            
+                    Rigidbody rb = bomb.GetComponent<Rigidbody>();
+                    rb.AddForce(Camera.main.transform.forward * throwPower, ForceMode.Impulse);
+                    break;
+                //스나이퍼모드 추가
+                case WeaponMode.Sniper:
+                    //만일 줌모드가 아니면 화면확대해서 줌모드로 변경
+                    if (!ZoomMode)
+                    {
+                        Camera.main.fieldOfView = 15f;
+                        ZoomMode = true;
+                    }
+                    //줌모드였으면 줌모드 해제
+                    else
+                    {
+                        Camera.main.fieldOfView = 60f;
+                        ZoomMode = false;
+                    }
+                    break;
+            }
         }
         
         //마우스 좌클릭 입력하면 레이캐스트로 총 발사
@@ -51,6 +109,10 @@ public class PlayerFire : MonoBehaviour
             {
                 anim.SetTrigger("Attack");
             }
+            
+            //총 이펙트 작동
+            StartCoroutine(ShootEffectOn(0.05f));
+            
             Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
             Debug.DrawRay(Camera.main.transform.position, Camera.main.transform.forward * 1000f, Color.red, 2f);
             
@@ -96,5 +158,17 @@ public class PlayerFire : MonoBehaviour
                 Debug.Log("No Hit");
             }
         }
+    }
+
+
+    //총기이펙트 코루틴 함수
+    IEnumerator ShootEffectOn(float duration)
+    {
+        //랜덤으로 이펙트 활성화
+        int num = Random.Range(0, eff_Flash.Length);
+        eff_Flash[num].SetActive(true);
+        //기다렸다가 비활성화
+        yield return new WaitForSeconds(duration);
+        eff_Flash[num].SetActive(false);
     }
 }

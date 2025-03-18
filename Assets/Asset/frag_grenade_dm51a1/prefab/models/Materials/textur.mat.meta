@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 37ef780383ec4bb48bcf6489c6353df5
+timeCreated: 1504737093
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 99777
+  packageName: Frag Grenade DM51A1
+  packageVersion: 1.0
+  assetPath: Assets/frag_grenade_dm51a1/prefab/models/Materials/textur.mat
+  uploadId: 199876
