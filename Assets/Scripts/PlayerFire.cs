@@ -12,12 +12,15 @@ public class PlayerFire : MonoBehaviour
     public int weaponPower = 3;
     
     private ParticleSystem ps; //파티클시스템
+    private Animator anim; //애니메이터 변수
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         //파티클시스템 컴포넌트 가져오기
         ps = bulletEffect.GetComponent<ParticleSystem>();
+        //애니메이터 컴포넌트 가져오기
+        anim = GetComponentInChildren<Animator>();
     }
 
     // Update is called once per frame
@@ -43,6 +46,11 @@ public class PlayerFire : MonoBehaviour
         //마우스 좌클릭 입력하면 레이캐스트로 총 발사
         if (Input.GetMouseButtonDown(0))
         {
+            //이동블렌드 트리 파라미터 값이 0이면 공격 애니메이션 재생
+            if (anim.GetFloat("MoveMotion") == 0)
+            {
+                anim.SetTrigger("Attack");
+            }
             Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
             Debug.DrawRay(Camera.main.transform.position, Camera.main.transform.forward * 1000f, Color.red, 2f);
             

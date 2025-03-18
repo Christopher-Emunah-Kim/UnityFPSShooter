@@ -74,6 +74,8 @@ public class GameManager : MonoBehaviour
     {
         if (player.hp <= 0)
         {
+            //플레이어 애니메이션 정지
+            player.GetComponentInChildren<Animator>().SetFloat("MoveMotion", 0f);
             //상태 텍스트 활성화
             gameLabel.SetActive(true);
             gameText.text = "Game Over!";

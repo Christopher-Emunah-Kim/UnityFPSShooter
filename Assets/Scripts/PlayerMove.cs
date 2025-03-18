@@ -8,6 +8,9 @@ public class PlayerMove : MonoBehaviour
     //캐릭터 컨트롤러 인스턴스
     private CharacterController cc;
     
+    //애니메이터 변수
+    Animator anim;
+    
     //속도
     public float moveSpeed = 7f;
     
@@ -33,6 +36,8 @@ public class PlayerMove : MonoBehaviour
     {
         //캐릭터 컨트롤러 받기
         cc = GetComponent<CharacterController>();
+        //애니메이터 받기
+        anim = GetComponentInChildren<Animator>();
     }
 
     // Update is called once per frame
@@ -50,6 +55,9 @@ public class PlayerMove : MonoBehaviour
         
         Vector3 dir = new Vector3(h, 0, v);
         dir = dir.normalized;
+        
+        //Move블렌딩 트리 호출 후 파라미터 전달
+        anim.SetFloat("MoveMotion", dir.magnitude);
         
         //메인카메라 기준으로 벡터전환
         dir = Camera.main.transform.TransformDirection(dir);
