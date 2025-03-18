@@ -1,8 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.EventSystems;
 using UnityEngine.PlayerLoop;
+using UnityEngine.Rendering.Universal;
 using UnityEngine.UI;
 
 public class EnemyFSM : MonoBehaviour
@@ -25,6 +27,8 @@ public class EnemyFSM : MonoBehaviour
     private CharacterController cc;
     //애니메이터 변수
     Animator anim;
+    //내비게이션 에이전트 변수
+    private NavMeshAgent agent;
     
     //플레이어 발견 범위
     public float findDistance = 8f;
@@ -73,6 +77,9 @@ public class EnemyFSM : MonoBehaviour
         
         //자식 오브젝트 애니메이터 받기
         anim = transform.GetComponentInChildren<Animator>();
+        
+        //내비 에이전트 받기
+        agent = GetComponent<NavMeshAgent>();
     }
 
     // Update is called once per frame
@@ -113,9 +120,18 @@ public class EnemyFSM : MonoBehaviour
         //공격범위 밖이면 플레이어 향해 이동
         if (Vector3.Distance(player.position, transform.position) > attackDistance)
         {
-            Vector3 direction = (player.position - transform.position).normalized;
-            cc.Move(direction * (moveSpeed * Time.deltaTime));
-            transform.forward = direction; //플레이어쪽 방향 전환.
+            //Nav agent 추가에 따라 주석처리
+            // Vector3 direction = (player.position - transform.position).normalized;
+            // cc.Move(direction * (moveSpeed * Time.deltaTime));
+            // transform.forward = direction; //플레이어쪽 방향 전환.
+            
+            //에이전트의 이동을 멈추고 경로 초기화
+            agent.isStopped = true;
+            agent.ResetPath();
+            //내비게이션 접근 최소거리를 공격 가능거리로 설정
+            agent.stoppingDistance = attackDistance;
+            //내비게이션 목적지를 플레이어 위치로 설정
+            agent.destination = player.position;
         }
         //아니면 공격상태로 전환
         else
@@ -176,14 +192,25 @@ public class EnemyFSM : MonoBehaviour
         //초기위치에서의 거리가 0.1f이상이면 초기 위치로 이동
         if (Vector3.Distance(transform.position, originPos) > 0.1f)
         {
-            Vector3 dir = (originPos - transform.position).normalized;
-            cc.Move(dir * (moveSpeed * Time.deltaTime));
-            transform.forward = dir; //방향을 목표지점으로 전환.
+            //Nav Agent 추가에 따라 주석처리
+            // Vector3 dir = (originPos - transform.position).normalized;
+            // cc.Move(dir * (moveSpeed * Time.deltaTime));
+            // transform.forward = dir; //방향을 목표지점으로 전환.
+            
+            //내비게이션 목적지를 초기 저장 위치로 설정
+            agent.destination = originPos;
+            //내비게이션 접근 최소거리를 0으로 설정
+            agent.stoppingDistance = 0;
         }
         //아니면 자신의 위치를 초기 위치로 조정하고, 대기상태 전환
         else
         {
+            //내비게이션 이동 멈추고 경로 초기화
+            agent.isStopped = true;
+            agent.ResetPath();
+            //초기상태로 전환
             transform.position = originPos;
+            transform.rotation = originRot;
             //hp회복
             hp = maxHp;
             m_State = EnemyState.Idle;
@@ -204,6 +231,11 @@ public class EnemyFSM : MonoBehaviour
         
         //플레이어 공격력만큼 체력감소
         hp -= damage;
+        
+        //내비게이션 이동 멈추고 경로 초기화
+        agent.isStopped = true;
+        agent.ResetPath();
+        
         //체력이 0보다 크면 피격상태 전환
         if (hp > 0)
         {
