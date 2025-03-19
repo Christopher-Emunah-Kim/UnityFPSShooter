@@ -116,7 +116,9 @@ public class GameManager : MonoBehaviour
     {
         Time.timeScale = 1f;
         //현재씬 다시 로드
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        //SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        //로딩씬 진입
+        SceneManager.LoadScene(1); 
     }
     
     //종료하기 옵션
