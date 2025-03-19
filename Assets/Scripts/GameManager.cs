@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -10,6 +12,7 @@ public class GameManager : MonoBehaviour
     {
         Ready,
         Run,
+        Pause,
         GameOver
     }
     
@@ -27,6 +30,8 @@ public class GameManager : MonoBehaviour
     public GameObject gameLabel;
     //텍스트 컴포넌트
     private Text gameText;
+    //옵션화면 UI오브젝트 변수
+    public GameObject gameOption;
     
     private void Awake()
     {
@@ -80,8 +85,43 @@ public class GameManager : MonoBehaviour
             gameLabel.SetActive(true);
             gameText.text = "Game Over!";
             gameText.color = Color.red;
+            
+            //게임종료UI 호출
+            Transform buttons = gameText.transform.GetChild(0); //상태 텍스트의 자식오브젝트의 트랜스폼 데이터 가져오기
+            buttons.gameObject.SetActive(true); //버튼 활성화
+            
             //상태를 게임오버로 변경
             gState = GameState.GameOver;
         }
+    }
+    
+    //옵션화면켜기
+    public void OpenOptionWindow()
+    {
+        gameOption.SetActive(true);//활성화
+        Time.timeScale = 0f; //게임속도 0으로 
+        gState = GameState.Pause; //게임상태 변경
+    }
+    
+    //계속하기 옵션
+    public void CloseOptionWindow()
+    {
+        gameOption.SetActive(false);
+        Time.timeScale = 1f;
+        gState = GameState.Run;
+    }
+    
+    //다시하기 옵션
+    public void RestartGame()
+    {
+        Time.timeScale = 1f;
+        //현재씬 다시 로드
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+    
+    //종료하기 옵션
+    public void QuitGame()
+    {
+        Application.Quit();
     }
 }
